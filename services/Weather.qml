@@ -121,14 +121,14 @@ Singleton {
                 humidity: json.current.relative_humidity_2m,
                 windSpeed: json.current.wind_speed_10m,
                 isDay: json.current.is_day,
-                sunrise: json.daily.sunrise[0],
-                sunset: json.daily.sunset[0]
+                sunrise: json.daily.sunrise[0].replace("T", " "),
+                sunset: json.daily.sunset[0].replace("T", " ")
             };
 
-            for (let i = 0; i < json.daily.time.length; i++) {
-                const localDate = new Date(json.daily.time[i] + "T00:00");
+            const forecastList = [];
+            for (let i = 0; i < json.daily.time.length; i++)
                 forecastList.push({
-                    date: Qt.formatDate(localDate, "MM/dd"),
+                    date: json.daily.time[i].replace(/-/g, "/"),
                     maxTempC: Math.round(json.daily.temperature_2m_max[i]),
                     maxTempF: Math.round(toFahrenheit(json.daily.temperature_2m_max[i])),
                     minTempC: Math.round(json.daily.temperature_2m_min[i]),
@@ -136,13 +136,13 @@ Singleton {
                     weatherCode: json.daily.weather_code[i],
                     icon: Icons.getWeatherIcon(json.daily.weather_code[i])
                 });
-            }
             forecast = forecastList;
 
             const hourlyList = [];
             const now = new Date();
             for (let i = 0; i < json.hourly.time.length; i++) {
                 const time = new Date(json.hourly.time[i].replace("T", " "));
+
                 if (time < now)
                     continue;
 
@@ -169,7 +169,7 @@ Singleton {
 
         const [lat, lon] = loc.split(",").map(s => s.trim());
         const baseUrl = "https://api.open-meteo.com/v1/forecast";
-        const params = ["latitude=" + lat, "longitude=" + lon, "hourly=weather_code,temperature_2m", "daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset", "current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m", "timezone=local", "forecast_days=7"];
+        const params = ["latitude=" + lat, "longitude=" + lon, "hourly=weather_code,temperature_2m", "daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset", "current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m", "timezone=auto", "forecast_days=7"];
 
         return baseUrl + "?" + params.join("&");
     }
@@ -218,7 +218,6 @@ Singleton {
         target: Config.services
     }
 
-    // Refresh current location hourly
     Timer {
         interval: 3600000 // 1 hour
         running: true
