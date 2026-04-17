@@ -354,7 +354,7 @@ Item {
 
                 anchors.left: parent.left
 
-                text: root.lengthStr(Players.active?.position % Players.active?.length ?? -1)
+                text: root.lengthStr(Players.active ? Players.active.position % Players.active.length : -1)
                 color: Colours.palette.m3onSurfaceVariant
                 font.pointSize: Tokens.font.size.small
             }
