@@ -67,6 +67,28 @@ CustomMouseArea {
             }
 
             Item {
+                implicitWidth: implicitHeight
+                implicitHeight: prevMonthText.implicitHeight + Tokens.padding.small * 2
+
+                StateLayer {
+                    id: todayDateStateLayer
+
+                    radius: Tokens.rounding.full
+                    onClicked: root.dashState.currentDate = new Date();
+                }
+
+                MaterialIcon {
+                    id: todayDateText
+
+                    anchors.centerIn: parent
+                    text: "today"
+                    color: Colours.palette.m3tertiary
+                    font.pointSize: Tokens.font.size.normal
+                    font.weight: 700
+                }
+            }
+
+            Item {
                 Layout.fillWidth: true
 
                 implicitWidth: monthYearDisplay.implicitWidth + Tokens.padding.small * 2
