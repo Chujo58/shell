@@ -132,10 +132,22 @@ Singleton {
         command: [GlobalConfig.services.calendar.command, "calendar", "+agenda", "--days", String(GlobalConfig.services.calendar.agendaDays), "--format", "json"]
         stdout: StdioCollector {
             onStreamFinished: {
-                // console.log("GCalendar raw output:", text);
+                console.log("GCalendar raw output:", text);
                 try {
                     const json = JSON.parse(text);
-                    root.events = root.parseEvents(json.events ?? []);
+
+                    // Keep the current cache when the provider returns an error payload.
+                    if (json.error) {
+                        console.warn("GCalendar: provider error:", json.error.message ?? json.error.reason ?? "Unknown error");
+                        return;
+                    }
+
+                    if (!Array.isArray(json.events)) {
+                        console.warn("GCalendar: invalid response payload (missing events array)");
+                        return;
+                    }
+
+                    root.events = root.parseEvents(json.events);
                     root.saveCache();
                 } catch (e) {
                     console.warn("GCalendar: failed to parse gws output:", e);

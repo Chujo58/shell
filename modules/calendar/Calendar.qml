@@ -32,9 +32,6 @@ Item {
     // Stuff for the calendar:
     required property CalendarState calState
 
-    readonly property int currMonth: calState.currentDate.getMonth()
-    readonly property int currYear: calState.currentDate.getFullYear()
-
     GridLayout {
         anchors.fill: parent
 
@@ -42,7 +39,7 @@ Item {
         columnSpacing: 0
 
         columns: 2
-        rows: root.floating ? 2 : 1
+        rows: 2
 
         Loader {
             Layout.fillWidth: true
@@ -58,46 +55,8 @@ Item {
             }
         } 
 
-        CustomMouseArea {
-            id: calendarArea
-
-            Layout.row: 1
-            Layout.columnSpan: 1
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            implicitHeight: inner.implicitHeight + inner.anchors.margins * 2
-
-            acceptedButtons: Qt.MiddleButton
-            onClicked: root.calState.currentDate = new Date()
-
-            function onWheel(event: WheelEvent): void {
-                if (event.angleDelta.y > 0)
-                    root.calState.currentDate = new Date(root.currYear, root.currMonth - 1, 1);
-                else if (event.angleDelta.y < 0)
-                    root.calState.currentDate = new Date(root.currYear, root.currMonth + 1, 1);
-            }
-
-            ColumnLayout {
-                id: inner
-
-                anchors.fill: parent
-                anchors.margins: Tokens.padding.large
-                spacing: Tokens.spacing.small
-
-                CalendarGrid {
-                    Layout.fillWidth: true
-
-                    currMonth: root.currMonth
-                    currYear: root.currYear
-
-                    onMonthPrevious: root.calState.currentDate = new Date(root.currYear, root.currMonth - 1, 1)
-                    onMonthNext: root.calState.currentDate = new Date(root.currYear, root.currMonth + 1, 1)
-                    onTodayClicked: root.calState.currentDate = new Date()
-                }
-            }
+        CalendarSidebar {
+            calState: root.calState
         }
         
         
