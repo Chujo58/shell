@@ -5,6 +5,7 @@ import Caelestia
 import qs.components.misc
 import qs.services
 import qs.modules.controlcenter
+import qs.modules.calendar
 
 Scope {
     id: root
@@ -154,6 +155,13 @@ Scope {
         }
 
         target: "toaster"
+    }
+
+    IpcHandler {
+        function open(): void {
+            CalendarWindow.create();
+        }
+        target: "calendarApp"
     }
 
     LoggingCategory {
