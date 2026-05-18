@@ -9,6 +9,22 @@ namespace caelestia::config {
 
 using Qt::StringLiterals::operator""_s;
 
+class CalendarConfig : public ConfigObject {
+    Q_OBJECT
+    QML_ANONYMOUS
+
+    CONFIG_GLOBAL_PROPERTY(bool, enabled, false)
+    CONFIG_GLOBAL_PROPERTY(QString, command, "gws")
+    CONFIG_GLOBAL_PROPERTY(int, agendaDays, 30)
+    CONFIG_GLOBAL_PROPERTY(int, upcomingHours, 24)
+    CONFIG_GLOBAL_PROPERTY(int, reminderMinutes, 10)
+    CONFIG_GLOBAL_PROPERTY(int, refreshInterval, 900)
+
+public:
+    explicit CalendarConfig(QObject* parent = nullptr)
+        : ConfigObject(parent) {}
+};
+
 class ServiceConfig : public ConfigObject {
     Q_OBJECT
     QML_ANONYMOUS
@@ -34,10 +50,12 @@ class ServiceConfig : public ConfigObject {
         { vmap({ { u"from"_s, u"com.github.th_ch.youtube_music"_s }, { u"to"_s, u"YT Music"_s } }) })
     CONFIG_GLOBAL_PROPERTY(bool, showLyrics, false)
     CONFIG_GLOBAL_PROPERTY(QString, lyricsBackend, u"Auto"_s)
+    CONFIG_SUBOBJECT(CalendarConfig, calendar)
 
 public:
     explicit ServiceConfig(QObject* parent = nullptr)
-        : ConfigObject(parent) {}
+    : ConfigObject(parent)
+    , m_calendar(new CalendarConfig(this)) {}
 };
 
 } // namespace caelestia::config
