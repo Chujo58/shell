@@ -16,36 +16,12 @@ StyledRect {
     StyledText {
         id: text
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: parent.horizontalLeft
         anchors.bottom: parent.bottom
 
-        text: qsTr("Calendar")
+        text: qsTr(" 󰃭  Calendar")
         font.capitalization: Font.Capitalize
-        font.pointSize: Tokens.font.size.larger
+        font.pointSize: Tokens.font.size.larger * 2
         font.weight: 500
-    }
-
-    Item {
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: Tokens.padding.normal
-
-        implicitWidth: implicitHeight
-        implicitHeight: closeIcon.implicitHeight + Tokens.padding.small
-
-        StateLayer {
-            onClicked: {
-                QsWindow.window.destroy();
-            }
-
-            radius: Tokens.rounding.full
-        }
-
-        MaterialIcon {
-            id: closeIcon
-
-            anchors.centerIn: parent
-            text: "close"
-        }
     }
 }
