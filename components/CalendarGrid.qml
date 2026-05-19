@@ -8,12 +8,14 @@ import qs.components
 import qs.components.controls
 import qs.components.effects
 import qs.services
+import qs.modules.calendar
 
 ColumnLayout {
     id: root
 
     required property int currMonth
     required property int currYear
+    required property bool inDashboard
 
     spacing: Tokens.spacing.small
 
@@ -103,6 +105,32 @@ ColumnLayout {
                 font.pointSize: Tokens.font.size.normal
                 font.weight: 500
                 font.capitalization: Font.Capitalize
+            }
+        }
+
+        Item {
+            visible: inDashboard
+            implicitWidth: implicitHeight
+            implicitHeight: nextMonthText.implicitHeight + Tokens.padding.small * 2
+
+            StateLayer {
+                id: popoutCalStateLayer
+
+                onClicked: {
+                    CalendarWindow.create();
+                }
+
+                radius: Tokens.rounding.full
+            }
+
+            MaterialIcon {
+                id: popoutCalApp
+
+                anchors.centerIn: parent
+                text: "open_in_new"
+                color: Colours.palette.m3tertiary
+                font.pointSize: Tokens.font.size.normal
+                font.weight: 700
             }
         }
 

@@ -158,6 +158,7 @@ Scope {
     }
 
     IpcHandler {
+        id: calendarIpc
         function open(): void {
             CalendarWindow.create();
         }

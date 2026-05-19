@@ -60,6 +60,7 @@ CustomMouseArea {
 
             currMonth: root.currMonth
             currYear: root.currYear
+            inDashboard: false
 
             onMonthPrevious: root.calState.currentDate = new Date(root.currYear, root.currMonth - 1, 1)
             onMonthNext: root.calState.currentDate = new Date(root.currYear, root.currMonth + 1, 1)
