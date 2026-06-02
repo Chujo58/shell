@@ -33,8 +33,22 @@ ColumnLayout {
 
             return ev.startTime >= now;
         })//.slice(0, 5)
+
+    readonly property var upcomingCalendars: {
+        let s = [];
+        let calList = [];
+        for (const ev of upcomingEvents){
+            for (const cal of GCalendar.calendars){
+                if (ev.calendar == cal.summary & !s.includes(ev.calendar)){
+                    s.push(ev.calendar);
+                    calList.push(cal);
+                }
+            }
+        }
+        return calList;
+    }
     
-    readonly property var upcomingStuff: {
+    readonly property var upcomingEventsPerDay: {
         let rootList = [];
         let eventList = [];
         let tempCurrentDate = upcomingEvents[0].dateKey; //y-m-d
@@ -47,11 +61,8 @@ ColumnLayout {
                 eventList = [];
                 tempCurrentDate = eventCurrentDate;
             } 
-            // else {
-            //     eventList.push(ev);
-            // }
         }
-        console.log("rootList:",rootList);
+        // console.log("rootList:",rootList);
         return rootList;
     }
 
@@ -66,6 +77,7 @@ ColumnLayout {
     anchors.right: parent.right
     implicitHeight: inner.implicitHeight + inner.anchors.margins * 2
 
+    // The small grid calendar up top!
     CustomMouseArea{
         id: gridMouse
         Layout.fillWidth: true
@@ -103,6 +115,61 @@ ColumnLayout {
         }
     }
 
+    // The calendar selection part
+    StyledRect {
+        // Layout.fillHeight: true
+        Layout.fillWidth: true
+
+        implicitHeight: calendarList.implicitHeight + Tokens.padding.large * 2
+
+        color: Colours.palette.m3surfaceContainerLow
+        radius: Tokens.rounding.large
+
+        ColumnLayout {
+            id: calendarList
+
+            anchors.fill: parent
+            anchors.margins: Tokens.padding.large
+            spacing: Tokens.spacing.small
+
+            StyledText {
+                text: qsTr("Calendars")
+                color: Colours.palette.m3primary
+                font.pointSize: Tokens.fontSize.small
+                font.weight: 600
+            }
+
+            Repeater {
+                model: root.upcomingCalendars
+
+                RowLayout {
+                    required property var modelData
+
+                    Layout.fillWidth: true
+                    spacing: Tokens.spacing.small
+
+                    Rectangle {
+                        Layout.preferredWidth: 3
+                        Layout.fillHeight: true
+                        radius: 1.5
+
+                        color: modelData.backgroundColor
+                    }
+
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: modelData.summary
+                        color: Colours.palette.m3onSurface
+                        font.pointSize: Tokens.fontSize.small
+                        // font.weight: 500
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+        }
+    }
+
+    // Upcoming events part
     StyledRect {
         clip: true
         Layout.fillWidth: true
@@ -110,7 +177,7 @@ ColumnLayout {
         visible: GCalendar.enabled && root.upcomingEvents.length > 0
         implicitHeight: upcomingContent.implicitHeight + Tokens.padding.large * 2
 
-        color: Colours.tPalette.m3surfaceContainerLow
+        color: Colours.palette.m3surfaceContainerLow
         radius: Tokens.rounding.large
 
         ColumnLayout {
@@ -148,7 +215,7 @@ ColumnLayout {
                     spacing: Tokens.spacing.small
 
                     Repeater {
-                        model: root.upcomingStuff
+                        model: root.upcomingEventsPerDay
 
                         ColumnLayout {
                             required property var modelData
@@ -158,53 +225,52 @@ ColumnLayout {
                                 color: Colours.palette.m3tertiary
                             }
                             Repeater {
-                            model: modelData
+                                model: modelData
 
-                            RowLayout {
-                                id: eventRow
+                                RowLayout {
+                                    id: eventRow
 
-                                required property var modelData
+                                    required property var modelData
 
-                                Layout.fillWidth: true
-                                spacing: Tokens.spacing.small
-
-                                Rectangle {
-                                    Layout.preferredWidth: 3
-                                    Layout.fillHeight: true
-                                    radius: 1.5
-                                    color: Colours.palette.m3tertiary
-                                }
-
-                                ColumnLayout {
                                     Layout.fillWidth: true
-                                    spacing: 0
+                                    spacing: Tokens.spacing.small
 
-                                    StyledText {
-                                        Layout.fillWidth: true
-                                        text: eventRow.modelData.summary
-                                        color: Colours.palette.m3onSurface
-                                        font.pointSize: Tokens.fontSize.small
-                                        font.weight: 500
-                                        elide: Text.ElideRight
+                                    Rectangle {
+                                        Layout.preferredWidth: 3
+                                        Layout.fillHeight: true
+                                        radius: 1.5
+                                        color: Colours.palette.m3tertiary
                                     }
 
-                                    StyledText {
+                                    ColumnLayout {
                                         Layout.fillWidth: true
-                                        text: {
-                                            let line = GCalendar.formatEventTime(eventRow.modelData, root.upcomingHours);
-                                            if (eventRow.modelData.location)
-                                                line += ` · ${eventRow.modelData.location}`;
-                                            return line;
+                                        spacing: 0
+
+                                        StyledText {
+                                            Layout.fillWidth: true
+                                            text: eventRow.modelData.summary
+                                            color: Colours.palette.m3onSurface
+                                            font.pointSize: Tokens.fontSize.small
+                                            font.weight: 500
+                                            elide: Text.ElideRight
                                         }
-                                        color: Colours.palette.m3onSurfaceVariant
-                                        font.pointSize: Tokens.fontSize.small * 0.9
-                                        elide: Text.ElideRight
+
+                                        StyledText {
+                                            Layout.fillWidth: true
+                                            text: {
+                                                let line = GCalendar.formatEventTime(eventRow.modelData, root.upcomingHours);
+                                                if (eventRow.modelData.location)
+                                                    line += ` · ${eventRow.modelData.location}`;
+                                                return line;
+                                            }
+                                            color: Colours.palette.m3onSurfaceVariant
+                                            font.pointSize: Tokens.fontSize.small * 0.9
+                                            elide: Text.ElideRight
+                                        }
                                     }
                                 }
-                            }
-                        }  
-                        }
-                                              
+                            }  
+                        }                         
                     }
                 }
             }

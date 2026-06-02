@@ -3,6 +3,7 @@
 #include "configobject.hpp"
 
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qvariant.h>
 
 namespace caelestia::config {
@@ -19,6 +20,7 @@ class CalendarConfig : public ConfigObject {
     CONFIG_GLOBAL_PROPERTY(int, upcomingHours, 24)
     CONFIG_GLOBAL_PROPERTY(int, reminderMinutes, 10)
     CONFIG_GLOBAL_PROPERTY(int, refreshInterval, 900)
+    CONFIG_GLOBAL_PROPERTY(QStringList, hiddenCalendars)
 
 public:
     explicit CalendarConfig(QObject* parent = nullptr)

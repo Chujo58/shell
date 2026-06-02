@@ -11,8 +11,10 @@ Singleton {
     id: root
 
     readonly property bool enabled: GlobalConfig.services.calendar.enabled
+    readonly property list<string> hiddenCalendars: GlobalConfig.services.calendar.hiddenCalendars
 
     property list<var> events: []
+    property list<var> calendars: []
     readonly property var eventDateSet: {
         const s = new Set();
         for (const ev of events)
@@ -88,6 +90,18 @@ Singleton {
         return parsed;
     }
 
+    function parseCalendar(data: var) : list<var> {
+        const parsed = [];
+        for (const cal of data){
+            parsed.push({
+                summary: cal.summary ?? "",
+                backgroundColor: cal.backgroundColor ?? "",
+                id: cal.id ?? ""
+            })
+        }
+        return parsed;
+    }
+
     function saveCache(): void {
         cache.setText(JSON.stringify(root.events.map(ev => ({
                     summary: ev.summary,
@@ -96,12 +110,19 @@ Singleton {
                     location: ev.location,
                     calendar: ev.calendar
                 }))));
+
+        calendarCache.setText(JSON.stringify(root.calendars.map(ev => ({
+            summary: ev.summary,
+            backgroundColor: ev.backgroundColor,
+            id: ev.id
+        }))))
     }
 
     function fetch(): void {
         if (!enabled)
             return;
         fetchProc.running = true;
+        fetchCalProc.running = true;
     }
 
     // Initial fetch (refreshes cache in background)
@@ -116,6 +137,26 @@ Singleton {
                 const data = JSON.parse(text());
                 if (root.events.length === 0)
                     root.events = root.parseEvents(data);
+            } catch (e) {
+                // Ignore corrupt cache
+            }
+        }
+        onLoadFailed: err => {
+            if (err === FileViewError.FileNotFound)
+                setText("[]");
+        }
+    }
+
+    FileView {
+        id: calendarCache
+
+        path: `${Paths.state}/gcalCalendarList.json`
+        onLoaded: {
+            try {
+                const data = JSON.parse(text());
+                if (root.calendars.length === 0){
+                    root.calendars = root.parseCalendar(data);
+                }
             } catch (e) {
                 // Ignore corrupt cache
             }
@@ -148,6 +189,36 @@ Singleton {
                     }
 
                     root.events = root.parseEvents(json.events);
+                    root.saveCache();
+                } catch (e) {
+                    console.warn("GCalendar: failed to parse gws output:", e);
+                }
+            }
+        }
+    }
+
+    Process {
+        id: fetchCalProc
+
+        command: [GlobalConfig.services.calendar.command, "calendar", "calendarList", "list", "--format", "json"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                console.log("GCalendar raw output:", text);
+                try {
+                    const json = JSON.parse(text);
+
+                    // Keep the current cache when the provider returns an error payload.
+                    if (json.error) {
+                        console.warn("GCalendar: provider error:", json.error.message ?? json.error.reason ?? "Unknown error");
+                        return;
+                    }
+
+                    if (!Array.isArray(json.items)) {
+                        console.warn("GCalendar: invalid response payload (missing events array)");
+                        return;
+                    }
+
+                    root.calendars = root.parseCalendar(json.items);
                     root.saveCache();
                 } catch (e) {
                     console.warn("GCalendar: failed to parse gws output:", e);
