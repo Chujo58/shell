@@ -53,18 +53,20 @@ ColumnLayout {
     readonly property var upcomingEventsPerDay: {
         let rootList = [];
         let eventList = [];
-        let tempCurrentDate = upcomingEvents[0].dateKey; //y-m-d
-        const now = Date.now();
+        let tempCurrentDate = null;
         for (const ev of upcomingEvents) {
             const eventCurrentDate = ev.dateKey;
-            eventList.push(ev);
-            if (tempCurrentDate != eventCurrentDate) {
-                rootList.push(eventList);
-                eventList = [];
+            if (tempCurrentDate === null || tempCurrentDate != eventCurrentDate) {
+                if (eventList.length > 0)
+                    rootList.push(eventList);
+                eventList = [ev];
                 tempCurrentDate = eventCurrentDate;
+            } else {
+                eventList.push(ev);
             } 
         }
-        // console.log("rootList:",rootList);
+        if (eventList.length > 0)
+            rootList.push(eventList);
         return rootList;
     }
 
@@ -80,6 +82,16 @@ ColumnLayout {
 
     function saveConfig() {
         GlobalConfig.services.calendar.hiddenCalendars = hiddenCals;
+    }
+
+    function showDate(date) {
+        const eventsOnDate = upcomingEvents.filter(item => item.dateKey === date);
+        if (eventsOnDate.length === 0)
+            return false;
+
+        const anyVisible = eventsOnDate.some(ev => !hiddenCals.includes(ev.calendar));
+        console.log(date, anyVisible);
+        return anyVisible;
     }
 
     // Layout stuff
@@ -241,10 +253,12 @@ ColumnLayout {
 
                         ColumnLayout {
                             required property var modelData
+                            visible: showDate(modelData[0].dateKey)
                             StyledText {
                                 text: Qt.formatDateTime(modelData[0].dateKey, "ddd, MMM d")
                                 // font.bold: true
                                 color: Colours.palette.m3tertiary
+                                
                             }
                             Repeater {
                                 model: modelData
