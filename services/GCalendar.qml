@@ -23,8 +23,12 @@ Singleton {
     }
     readonly property var eventDateSet: {
         const s = new Set();
-        for (const ev of events)
-            s.add(ev.dateKey);
+        for (const ev of events) {
+            if (!GlobalConfig.services.calendar.hiddenCalendars.includes(ev.calendar)){
+                s.add(ev.dateKey);
+            }
+        }
+            
         return s;
     }
 

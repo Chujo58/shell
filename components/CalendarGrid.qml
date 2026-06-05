@@ -76,7 +76,7 @@ ColumnLayout {
         Item {
             Layout.fillWidth: true
 
-            implicitWidth: monthYearDisplay.implicitWidth + Tokens.padding.small * 2
+            implicitWidth: monthYearDisplay.implicitWidth + Tokens.padding.small * 2 + (!inDashboard ? implicitHeight : 0)
             implicitHeight: monthYearDisplay.implicitHeight + Tokens.padding.small * 2
 
             StateLayer {
