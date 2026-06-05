@@ -11,7 +11,6 @@ Singleton {
     id: root
 
     readonly property bool enabled: GlobalConfig.services.calendar.enabled
-    readonly property list<string> hiddenCalendars: GlobalConfig.services.calendar.hiddenCalendars
 
     property list<var> events: []
     property list<var> calendars: []

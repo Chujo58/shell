@@ -20,7 +20,8 @@ ColumnLayout {
     // Upcoming events stuff
     readonly property int upcomingHours: GlobalConfig.services.calendar.agendaDays * 24
     readonly property int upcomingListMaxHeight: 180
-    property list<string> hiddenCals: []
+    property list<string> hiddenCals: GlobalConfig.services.calendar.hiddenCalendars
+
     readonly property list<var> upcomingEvents: GCalendar.events.filter(ev => {
             if (!ev)
                 return false;
@@ -65,6 +66,20 @@ ColumnLayout {
         }
         // console.log("rootList:",rootList);
         return rootList;
+    }
+
+    function hideCalendar(calendarName){
+        // Add Calendar to the hidden calendar list:
+        hiddenCals.push(calendarName);
+    }
+
+    function showCalendar(calendarName){
+        // Remove Calendar to the hidden calendar list:
+        hiddenCals = Array.from(hiddenCals).filter(item => item !== calendarName);
+    }
+
+    function saveConfig() {
+        GlobalConfig.services.calendar.hiddenCalendars = hiddenCals;
     }
 
     // Layout stuff
@@ -149,19 +164,17 @@ ColumnLayout {
                     spacing: Tokens.spacing.small
 
                     StyledCheckBox {
-                        checked: true
+                        checked: !root.hiddenCals.includes(modelData.summary)
                         color: modelData.backgroundColor
 
                         onBoxToggled: (isChecked) => {
-                            if (!isChecked) {
-                                if (! hiddenCals.includes(modelData.summary)){
-                                    hiddenCals.push(modelData.summary);
-                                }
+                            let calendarName = modelData.summary;
+                            if (isChecked){
+                                showCalendar(calendarName);
                             } else {
-                                if (hiddenCals.includes(modelData.summary)){
-                                    hiddenCals = Array.from(hiddenCals).filter(item => item !== modelData.summary);
-                                }
+                                hideCalendar(calendarName);
                             }
+                            saveConfig();
                         }
                     }
 
@@ -169,7 +182,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         text: modelData.summary
                         color: Colours.palette.m3onSurface
-                        font.pointSize: Tokens.fontSize.small
+                        // font.pointSize: Tokens.fontSize.small
                         // font.weight: 500
                         elide: Text.ElideRight
                     }
@@ -260,7 +273,7 @@ ColumnLayout {
                                             Layout.fillWidth: true
                                             text: eventRow.modelData.summary
                                             color: Colours.palette.m3onSurface
-                                            font.pointSize: Tokens.fontSize.small
+                                            // font.pointSize: Tokens.fontSize.small
                                             font.weight: 500
                                             elide: Text.ElideRight
                                         }
@@ -274,7 +287,7 @@ ColumnLayout {
                                                 return line;
                                             }
                                             color: Colours.palette.m3onSurfaceVariant
-                                            font.pointSize: Tokens.fontSize.small * 0.9
+                                            // font.pointSize: Tokens.fontSize.small * 0.9
                                             elide: Text.ElideRight
                                         }
                                     }
