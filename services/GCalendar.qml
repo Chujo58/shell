@@ -15,6 +15,13 @@ Singleton {
 
     property list<var> events: []
     property list<var> calendars: []
+    readonly property var colorMap: {
+        const s = {};
+        for (const cal of calendars) {
+            s[cal.summary] = cal.backgroundColor;
+        }
+        return s;
+    }
     readonly property var eventDateSet: {
         const s = new Set();
         for (const ev of events)

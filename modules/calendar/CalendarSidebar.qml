@@ -20,6 +20,7 @@ ColumnLayout {
     // Upcoming events stuff
     readonly property int upcomingHours: GlobalConfig.services.calendar.agendaDays * 24
     readonly property int upcomingListMaxHeight: 180
+    property list<string> hiddenCals: []
     readonly property list<var> upcomingEvents: GCalendar.events.filter(ev => {
             if (!ev)
                 return false;
@@ -65,7 +66,6 @@ ColumnLayout {
         // console.log("rootList:",rootList);
         return rootList;
     }
-
 
     // Layout stuff
     Layout.row: 1
@@ -148,12 +148,21 @@ ColumnLayout {
                     Layout.fillWidth: true
                     spacing: Tokens.spacing.small
 
-                    Rectangle {
-                        Layout.preferredWidth: 3
-                        Layout.fillHeight: true
-                        radius: 1.5
-
+                    StyledCheckBox {
+                        checked: true
                         color: modelData.backgroundColor
+
+                        onBoxToggled: (isChecked) => {
+                            if (!isChecked) {
+                                if (! hiddenCals.includes(modelData.summary)){
+                                    hiddenCals.push(modelData.summary);
+                                }
+                            } else {
+                                if (hiddenCals.includes(modelData.summary)){
+                                    hiddenCals = Array.from(hiddenCals).filter(item => item !== modelData.summary);
+                                }
+                            }
+                        }
                     }
 
                     StyledText {
@@ -234,12 +243,13 @@ ColumnLayout {
 
                                     Layout.fillWidth: true
                                     spacing: Tokens.spacing.small
+                                    visible: !hiddenCals.includes(modelData.calendar)
 
                                     Rectangle {
                                         Layout.preferredWidth: 3
                                         Layout.fillHeight: true
                                         radius: 1.5
-                                        color: Colours.palette.m3tertiary
+                                        color: GCalendar.colorMap[eventRow.modelData.calendar]
                                     }
 
                                     ColumnLayout {
