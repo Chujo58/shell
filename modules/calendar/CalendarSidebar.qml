@@ -90,7 +90,6 @@ ColumnLayout {
             return false;
 
         const anyVisible = eventsOnDate.some(ev => !hiddenCals.includes(ev.calendar));
-        console.log(date, anyVisible);
         return anyVisible;
     }
 
