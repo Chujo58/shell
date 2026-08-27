@@ -58,28 +58,28 @@ PageBase {
             icon: "workspaces"
             text: qsTr("Workspaces")
             subtext: qsTr("Indicators, window icons")
-            onClicked: root.nState.openSubPage(6)
+            onClicked: root.nState.openSubPage(7)
         }
 
         NavRow {
             icon: "web_asset"
             text: qsTr("Active window")
             subtext: qsTr("Title display, popout")
-            onClicked: root.nState.openSubPage(7)
+            onClicked: root.nState.openSubPage(8)
         }
 
         NavRow {
             icon: "widgets"
             text: qsTr("Tray")
             subtext: qsTr("System tray icons")
-            onClicked: root.nState.openSubPage(8)
+            onClicked: root.nState.openSubPage(9)
         }
 
         NavRow {
             icon: "signal_cellular_alt"
             text: qsTr("Status icons")
             subtext: qsTr("Visible indicators")
-            onClicked: root.nState.openSubPage(9)
+            onClicked: root.nState.openSubPage(10)
         }
 
         NavRow {
@@ -87,7 +87,7 @@ PageBase {
             icon: "schedule"
             text: qsTr("Clock")
             subtext: qsTr("Date, icon, background")
-            onClicked: root.nState.openSubPage(10)
+            onClicked: root.nState.openSubPage(11)
         }
 
         // Scroll actions

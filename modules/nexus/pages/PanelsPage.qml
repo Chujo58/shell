@@ -15,31 +15,38 @@ PageBase {
 
         NavRow {
             first: true
+            icon: "view_carousel"
+            text: qsTr("Overview")
+            subtext: qsTr("Workspace and window taskview")
+            onClicked: root.nState.openSubPage(1)
+        }
+
+        NavRow {
             icon: "dashboard"
             text: qsTr("Dashboard")
             subtext: Config.dashboard.enabled ? qsTr("Enabled") : qsTr("Disabled")
-            onClicked: root.nState.openSubPage(1)
+            onClicked: root.nState.openSubPage(2)
         }
 
         NavRow {
             icon: "dock_to_bottom"
             text: qsTr("Taskbar")
             subtext: Config.bar.persistent ? qsTr("Always visible") : Config.bar.showOnHover ? qsTr("Reveal on hover") : qsTr("Reveal on drag")
-            onClicked: root.nState.openSubPage(2)
+            onClicked: root.nState.openSubPage(3)
         }
 
         NavRow {
             icon: "apps"
             text: qsTr("Launcher")
             subtext: Config.launcher.enabled ? qsTr("Enabled") : qsTr("Disabled")
-            onClicked: root.nState.openSubPage(3)
+            onClicked: root.nState.openSubPage(4)
         }
 
         NavRow {
             icon: "dock_to_right"
             text: qsTr("Sidebar")
             subtext: Config.sidebar.enabled ? qsTr("Enabled") : qsTr("Disabled")
-            onClicked: root.nState.openSubPage(4)
+            onClicked: root.nState.openSubPage(5)
         }
 
         NavRow {
@@ -47,7 +54,7 @@ PageBase {
             icon: "construction"
             text: qsTr("Utilities")
             subtext: Config.utilities.enabled ? qsTr("Enabled") : qsTr("Disabled")
-            onClicked: root.nState.openSubPage(5)
+            onClicked: root.nState.openSubPage(6)
         }
     }
 }
