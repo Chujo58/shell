@@ -50,5 +50,14 @@ PageBase {
             subtext: Config.utilities.enabled ? Tr.trCtx("Enabled", "panel status") : Tr.trCtx("Disabled", "panel status")
             onClicked: root.nState.openSubPage(5)
         }
+
+
+        NavRow {
+            first: true
+            icon: "view_carousel"
+            text: qsTr("Overview")
+            subtext: qsTr("Workspace and window taskview")
+            onClicked: root.nState.openSubPage(6)
+        }
     }
 }
