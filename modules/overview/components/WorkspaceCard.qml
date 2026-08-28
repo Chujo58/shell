@@ -41,9 +41,10 @@ Item {
     DropArea {
         id: dropArea
         anchors.fill: parent
+        z: 10
         onDropped: drop => {
             if (drop.source) {
-                OverviewState.moveWindowToWorkspace(drop.source, workspaceId);
+                OverviewState.moveWindowToWorkspace(drop.source.modelData ?? drop.source, workspaceId);
             }
         }
     }
@@ -138,6 +139,7 @@ Item {
         anchors.right: parent.right
         height: root.baseHeight
         radius: Tokens.rounding.large
+        z: 1
 
         color: Colours.layer(Colours.palette.m3surfaceContainer, 0)
         border.width: root.isFocused ? 2 : (hoverHandler.hovered || root.isSelected || dropArea.containsDrag ? 1.5 : 1)
@@ -173,6 +175,7 @@ Item {
                     id: innerViewport
                     anchors.fill: parent
                     anchors.margins: Tokens.padding.extraSmall
+                    z: 1
 
                     Repeater {
                         model: root.toplevels
