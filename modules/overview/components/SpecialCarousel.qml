@@ -53,12 +53,24 @@ Item {
                 Repeater {
                     model: root.specialWorkspaces
 
-                    WorkspaceCard {
-                        baseWidth: root.cardWidth
-                        monitor: root.monitor
+                    Item {
+                        id: specialWorkspace
+                        required property var modelData
+                        implicitWidth: card.implicitWidth
+                        implicitHeight: card.implicitHeight
 
-                        onClicked: {
-                            OverviewState.toggleSpecialWorkspace(modelData.name, () => root.closeRequested());
+                        WorkspaceCard {
+                            id: card
+                            anchors.fill: parent
+                            index: specialWorkspace.index
+                            modelData: specialWorkspace.modelData.id
+                            baseWidth: root.cardWidth
+                            monitor: root.monitor
+                            workspaceName: specialWorkspace.modelData.name
+
+                            onClicked: {
+                                OverviewState.toggleSpecialWorkspace(specialWorkspace.modelData.name, () => root.closeRequested());
+                            }
                         }
                     }
                 }

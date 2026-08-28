@@ -14,22 +14,26 @@ import ".."
 Item {
     id: root
 
-    required property HyprlandWorkspace modelData
+    required property int modelData
     required property HyprlandMonitor monitor
     required property int index
+    readonly property int workspaceId: modelData
+    property string workspaceName: ""
     property int cardIndex: index
-    property real baseWidth: 420
+    property real baseWidth: Tokens.font.body.medium.pointSize * 20
     property real baseHeight: baseWidth * (9 / 16)
+    readonly property real cardPadding: Tokens.padding.small
+    readonly property real headerHeight: Math.max(Tokens.font.body.medium.pointSize, Tokens.font.label.medium.pointSize) + cardPadding * 2
 
-    readonly property bool isFocused: Hypr.focusedWorkspace?.id === modelData?.id
-    readonly property bool isActiveOnMonitor: monitor?.activeWorkspace?.id === modelData?.id
+    readonly property bool isFocused: Hypr.focusedWorkspace?.id === workspaceId
+    readonly property bool isActiveOnMonitor: monitor?.activeWorkspace?.id === workspaceId
     readonly property bool isSelected: OverviewState.selectedCardIndex === cardIndex
-    readonly property var toplevels: OverviewState.getToplevelsForWorkspace(modelData?.id ?? 0)
+    readonly property var toplevels: OverviewState.getToplevelsForWorkspace(workspaceId)
 
     signal clicked
 
     implicitWidth: baseWidth
-    implicitHeight: baseHeight + 36
+    implicitHeight: baseHeight + headerHeight + Tokens.padding.extraSmall
 
     scale: hoverHandler.hovered || isSelected ? 1.03 : (isFocused ? 1.01 : 1.0)
     Behavior on scale { Anim {} }
@@ -38,8 +42,8 @@ Item {
         id: dropArea
         anchors.fill: parent
         onDropped: drop => {
-            if (drop.source && modelData) {
-                OverviewState.moveWindowToWorkspace(drop.source, modelData.id);
+            if (drop.source) {
+                OverviewState.moveWindowToWorkspace(drop.source, workspaceId);
             }
         }
     }
@@ -55,15 +59,15 @@ Item {
 
         // Workspace number badge
         StyledRect {
-            implicitWidth: 24
-            implicitHeight: 24
+            implicitWidth: Tokens.font.label.medium.pointSize + cardPadding * 2
+            implicitHeight: implicitWidth
             radius: Tokens.rounding.full
             color: root.isFocused ? Colours.palette.m3primary : Colours.palette.m3surfaceContainerHigh
             anchors.verticalCenter: parent.verticalCenter
 
             StyledText {
                 anchors.centerIn: parent
-                text: root.modelData?.id ?? root.cardIndex + 1
+                text: root.workspaceId
                 font: Tokens.font.label.builders.medium.weight(Font.Bold).build()
                 color: root.isFocused ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
             }
@@ -71,16 +75,16 @@ Item {
 
         // Workspace Name
         StyledText {
-            text: root.modelData?.name ?? qsTr("Workspace")
-            font: Tokens.font.body.builders.medium.weight(Font.DemiBold).build()
+            text: root.workspaceName || qsTr("Workspace %1").arg(root.workspaceId)
+            font: Tokens.font.body.builders.medium.scale(1.15).weight(Font.DemiBold).build()
             color: root.isFocused ? Colours.palette.m3primary : Colours.palette.m3onSurface
             anchors.verticalCenter: parent.verticalCenter
         }
 
         // Focused / Active Status Pill inside Header
         StyledRect {
-            implicitWidth: statusText.implicitWidth + 14
-            implicitHeight: 20
+            implicitWidth: statusText.implicitWidth + cardPadding * 2
+            implicitHeight: statusText.implicitHeight + Tokens.padding.extraSmall
             radius: Tokens.rounding.full
             visible: root.isFocused || root.isActiveOnMonitor
             color: root.isFocused ? Colours.palette.m3primaryContainer : Colours.palette.m3surfaceContainerHigh

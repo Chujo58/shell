@@ -15,22 +15,24 @@ Item {
     required property HyprlandMonitor monitor
     signal closeRequested
 
-    readonly property var workspaces: OverviewState.getNormalWorkspaces(monitor)
-    readonly property real cardWidth: 420
+    readonly property var workspaceIds: OverviewState.getNormalWorkspaceIds(monitor)
+    readonly property var workspaceRows: OverviewState.getNormalWorkspaceRows(monitor)
+    readonly property real cardWidth: Math.max(Tokens.font.body.medium.pointSize * 20, (root.width - Tokens.padding.large * 2 - root.cardSpacing * 4) / 5)
+    readonly property real cardHeight: cardWidth * (9 / 16) + Tokens.font.body.medium.pointSize + Tokens.padding.small * 2 + Tokens.padding.extraSmall
     readonly property real cardSpacing: Tokens.spacing.medium
-    readonly property real sidePadding: Math.max(Tokens.padding.large, (root.width - cardWidth) / 2)
+    readonly property real sidePadding: Tokens.padding.large
 
     implicitWidth: parent.width
-    implicitHeight: 360
+    implicitHeight: root.cardHeight * 2 + root.cardSpacing + root.sidePadding * 2 + Tokens.padding.large
 
     function centerFocusedWorkspace(): void {
         const focusedId = Hypr.focusedWorkspace?.id;
-        const idx = root.workspaces.findIndex(w => w && w.id === focusedId);
+        const idx = root.workspaceIds.indexOf(focusedId);
         if (idx >= 0) {
-            const targetX = idx * (cardWidth + cardSpacing);
-            flickable.contentX = Math.max(0, Math.min(Math.max(0, flickable.contentWidth - flickable.width), targetX));
+            const targetY = Math.floor(idx / 5) * (root.cardHeight + root.cardSpacing);
+            flickable.contentY = Math.max(0, Math.min(Math.max(0, flickable.contentHeight - flickable.height), targetY));
         } else {
-            flickable.contentX = 0;
+            flickable.contentY = 0;
         }
     }
 
@@ -43,13 +45,6 @@ Item {
         }
     }
 
-    Connections {
-        target: root
-        function onWorkspacesChanged(): void {
-            Qt.callLater(root.centerFocusedWorkspace);
-        }
-    }
-
     Flickable {
         id: flickable
         anchors.top: parent.top
@@ -57,12 +52,12 @@ Item {
         anchors.bottomMargin: Tokens.padding.medium
         anchors.left: parent.left
         anchors.right: parent.right
-        contentWidth: row.implicitWidth + root.sidePadding * 2
-        contentHeight: height
-        clip: false
+        contentWidth: rowsColumn.implicitWidth + root.sidePadding * 2
+        contentHeight: rowsColumn.implicitHeight + root.sidePadding * 2
+        clip: true
         boundsBehavior: Flickable.StopAtBounds
 
-        Behavior on contentX {
+        Behavior on contentY {
             NumberAnimation {
                 duration: 250
                 easing.type: Easing.OutCubic
@@ -72,23 +67,35 @@ Item {
         Item {
             id: container
             width: flickable.contentWidth
-            height: flickable.height
+            height: flickable.contentHeight
 
-            Row {
-                id: row
-                x: root.sidePadding
-                anchors.verticalCenter: parent.verticalCenter
+            Column {
+                id: rowsColumn
+                x: Math.max(root.sidePadding, (container.width - implicitWidth) / 2)
+                y: root.sidePadding
                 spacing: root.cardSpacing
 
                 Repeater {
-                    model: root.workspaces
+                    model: root.workspaceRows
 
-                    WorkspaceCard {
-                        baseWidth: root.cardWidth
-                        monitor: root.monitor
+                    Row {
+                        required property var modelData
+                        required property int index
+                        spacing: root.cardSpacing
+                        visible: index === 0 || modelData.some(id => root.workspaceIds.indexOf(id) > 4)
+                        height: visible ? root.cardHeight : 0
 
-                        onClicked: {
-                            OverviewState.focusWorkspace(modelData.id, () => root.closeRequested());
+                        Repeater {
+                            model: modelData
+
+                            WorkspaceCard {
+                                baseWidth: root.cardWidth
+                                monitor: root.monitor
+
+                                onClicked: {
+                                    OverviewState.focusWorkspace(modelData, () => root.closeRequested());
+                                }
+                            }
                         }
                     }
                 }
@@ -102,17 +109,17 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: Tokens.padding.small
         spacing: Tokens.spacing.small
-        visible: root.workspaces.length > 1
+        visible: root.workspaceRows.length > 1
 
         Repeater {
-            model: root.workspaces.length
+            model: root.workspaceRows.length
 
             StyledRect {
                 required property int index
-                implicitWidth: (Hypr.focusedWorkspace?.id === root.workspaces[this.index]?.id) ? 18 : 6
+                implicitWidth: (Math.floor(((Hypr.focusedWorkspace?.id ?? 1) - 1) / 5) === this.index) ? 18 : 6
                 implicitHeight: 6
                 radius: Tokens.rounding.full
-                color: (Hypr.focusedWorkspace?.id === root.workspaces[this.index]?.id) ? Colours.palette.m3primary : Colours.palette.m3surfaceContainerHighest
+                color: (Math.floor(((Hypr.focusedWorkspace?.id ?? 1) - 1) / 5) === this.index) ? Colours.palette.m3primary : Colours.palette.m3surfaceContainerHighest
 
                 Behavior on implicitWidth { Anim {} }
                 Behavior on color { CAnim {} }
