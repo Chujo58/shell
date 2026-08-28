@@ -26,27 +26,32 @@ Item {
     Keys.onLeftPressed: event => {
         event.accepted = true;
         if (OverviewState.activeTab === 0) {
-            const workspaces = OverviewState.getNormalWorkspaces(root.monitor);
-            if (workspaces.length > 0) {
-                const curIdx = workspaces.findIndex(w => w.id === Hypr.focusedWorkspace?.id);
-                if (curIdx > 0) {
-                    OverviewState.focusWorkspace(workspaces[curIdx - 1].id);
-                }
-            }
+            const currentId = Hypr.focusedWorkspace?.id ?? 1;
+            if (currentId > 1)
+                OverviewState.focusWorkspace(currentId - 1);
         }
     }
 
     Keys.onRightPressed: event => {
         event.accepted = true;
         if (OverviewState.activeTab === 0) {
-            const workspaces = OverviewState.getNormalWorkspaces(root.monitor);
-            if (workspaces.length > 0) {
-                const curIdx = workspaces.findIndex(w => w.id === Hypr.focusedWorkspace?.id);
-                if (curIdx >= 0 && curIdx < workspaces.length - 1) {
-                    OverviewState.focusWorkspace(workspaces[curIdx + 1].id);
-                }
-            }
+            OverviewState.focusWorkspace((Hypr.focusedWorkspace?.id ?? 1) + 1);
         }
+    }
+
+    Keys.onUpPressed: event => {
+        event.accepted = true;
+        if (OverviewState.activeTab === 0) {
+            const currentId = Hypr.focusedWorkspace?.id ?? 1;
+            if (currentId > 5)
+                OverviewState.focusWorkspace(currentId - 5);
+        }
+    }
+
+    Keys.onDownPressed: event => {
+        event.accepted = true;
+        if (OverviewState.activeTab === 0)
+            OverviewState.focusWorkspace((Hypr.focusedWorkspace?.id ?? 1) + 5);
     }
 
     // Blurred Glassmorphic Backdrop

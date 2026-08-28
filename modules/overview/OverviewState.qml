@@ -28,37 +28,45 @@ Singleton {
         selectedWindowIndex = 0;
     }
 
-    // Normal workspaces sorted by ID: only workspaces with >= 1 window or currently focused
-    function getNormalWorkspaces(monitor: HyprlandMonitor): var {
+    // Keep the first row available and reveal later workspaces when used.
+    function getNormalWorkspaceIds(monitor: HyprlandMonitor): var {
         const monId = monitor?.id ?? -1;
         const focusedId = Hypr.focusedWorkspace?.id ?? -1;
+        const ids = [];
 
-        const list = Hypr.workspaces.values.filter(ws => {
+        for (let id = 1; id <= 5; id++)
+            ids.push(id);
+
+        Hypr.workspaces.values.forEach(ws => {
             if (!ws || ws.name.startsWith("special:"))
-                return false;
+                return;
             if (monId >= 0 && ws.monitor && ws.monitor.id !== monId)
-                return false;
+                return;
 
             const hasWindows = getToplevelsForWorkspace(ws.id).length > 0;
             const isFocused = ws.id === focusedId;
 
-            return hasWindows || isFocused;
+            if ((hasWindows || isFocused) && !ids.includes(ws.id))
+                ids.push(ws.id);
         });
 
-        // Ensure currently focused workspace is included if it matches monitor and not special
-        if (Hypr.focusedWorkspace && !Hypr.focusedWorkspace.name.startsWith("special:")) {
-            const fw = Hypr.focusedWorkspace;
-            const fwMonId = fw.monitor?.id ?? -1;
-            if (monId < 0 || fwMonId < 0 || fwMonId === monId) {
-                if (!list.some(ws => ws.id === fw.id)) {
-                    list.push(fw);
-                }
-            }
+        ids.sort((a, b) => a - b);
+        return ids;
+    }
+
+    function getNormalWorkspaceRows(monitor: HyprlandMonitor): var {
+        const ids = getNormalWorkspaceIds(monitor);
+        const maxId = ids.length > 0 ? Math.max(...ids) : 5;
+        const rows = [];
+
+        for (let start = 1; start <= maxId; start += 5) {
+            const row = [];
+            for (let id = start; id < start + 5; id++)
+                row.push(id);
+            rows.push(row);
         }
 
-        // Sort numerically by ID
-        list.sort((a, b) => a.id - b.id);
-        return list;
+        return rows;
     }
 
     // Special / scratchpad workspaces with >= 1 window
