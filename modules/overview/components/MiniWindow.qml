@@ -20,6 +20,7 @@ Item {
     required property real cardWidth
     required property real cardHeight
     property bool isHighlighted: false
+    property bool dragInProgress: false
 
     readonly property var ipc: modelData?.lastIpcObject ?? ({})
     readonly property list<int> at: ipc.at ?? [0, 0]
@@ -40,8 +41,14 @@ Item {
     width: targetW
     height: targetH
 
-    Behavior on x { Anim {} }
-    Behavior on y { Anim {} }
+    Behavior on x {
+        enabled: !root.dragInProgress
+        Anim {}
+    }
+    Behavior on y {
+        enabled: !root.dragInProgress
+        Anim {}
+    }
     Behavior on width { Anim {} }
     Behavior on height { Anim {} }
 
@@ -63,7 +70,7 @@ Item {
             ? Colours.palette.m3primary
             : (hoverHandler.hovered ? Colours.palette.m3outline : Colours.palette.m3outlineVariant)
 
-        opacity: dragArea.drag.active ? 0.6 : 1.0
+        opacity: dragHandler.active ? 0.6 : 1.0
 
         Behavior on border.color { CAnim {} }
         Behavior on opacity { Anim {} }
@@ -165,6 +172,14 @@ Item {
             id: dragHandler
             target: root
             grabPermissions: PointerHandler.CanTakeOverFromAnything
+            onActiveChanged: {
+                root.dragInProgress = active;
+                root.z = active ? 10000 : 0;
+                if (!active) {
+                    root.x = Qt.binding(function() { return root.targetX; });
+                    root.y = Qt.binding(function() { return root.targetY; });
+                }
+            }
         }
 
         HoverHandler {
