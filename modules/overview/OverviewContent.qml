@@ -12,9 +12,9 @@ Item {
     id: root
 
     required property ShellScreen screen
-    signal closeRequested
-
     readonly property HyprlandMonitor monitor: Hypr.monitorFor(screen)
+
+    signal closeRequested
 
     focus: true
 
@@ -57,6 +57,7 @@ Item {
     // Blurred Glassmorphic Backdrop
     StyledRect {
         id: bg
+
         anchors.fill: parent
         color: Colours.tPalette.m3surface
         opacity: Colours.transparency.enabled ? 0.55 : 0.75
@@ -72,6 +73,7 @@ Item {
         // 1. Top Header (Search & Tabs)
         Header {
             id: header
+
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
@@ -81,6 +83,7 @@ Item {
         // 2. Bottom Footer (Keys & Gestures)
         NavigationFooter {
             id: footer
+
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom

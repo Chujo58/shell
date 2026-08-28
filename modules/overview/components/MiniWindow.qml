@@ -38,17 +38,31 @@ Item {
     readonly property real targetW: Math.max(36, Math.min(cardWidth - targetX, size[0] / monW * cardWidth))
     readonly property real targetH: Math.max(28, Math.min(cardHeight - targetY, size[1] / monH * cardHeight))
 
+    function updateDragHover(): void {
+        const centerX = root.x + root.width / 2;
+        const centerY = root.y + root.height / 2;
+        OverviewState.dragHoverWorkspaceId = OverviewState.workspaceIdAtPoint(root.dragLayer, centerX, centerY);
+    }
+
     x: targetX
     y: targetY
     width: targetW
     height: targetH
 
+    onXChanged: if (root.dragInProgress)
+        root.updateDragHover()
+
+    onYChanged: if (root.dragInProgress)
+        root.updateDragHover()
+
     Behavior on x {
         enabled: !root.dragInProgress
+
         Anim {}
     }
     Behavior on y {
         enabled: !root.dragInProgress
+
         Anim {}
     }
     Behavior on width {
@@ -57,17 +71,6 @@ Item {
     Behavior on height {
         Anim {}
     }
-
-    function updateDragHover(): void {
-        const centerX = root.x + root.width / 2;
-        const centerY = root.y + root.height / 2;
-        OverviewState.dragHoverWorkspaceId = OverviewState.workspaceIdAtPoint(root.dragLayer, centerX, centerY);
-    }
-
-    onXChanged: if (root.dragInProgress)
-        root.updateDragHover()
-    onYChanged: if (root.dragInProgress)
-        root.updateDragHover()
 
     StyledRect {
         id: bg
@@ -100,6 +103,7 @@ Item {
 
                 ScreencopyView {
                     id: screencopy
+
                     anchors.fill: parent
                     captureSource: root.modelData?.wayland ?? null
                     live: true
@@ -111,6 +115,7 @@ Item {
                 // Top bar overlay on top of the live screencopy
                 StyledRect {
                     id: topBar
+
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -134,6 +139,7 @@ Item {
 
                         IconImage {
                             id: icon
+
                             asynchronous: true
                             source: Icons.getAppIcon(root.ipc.class || root.ipc.initialClass || "", "image-missing")
                             implicitWidth: Math.min(14, topBar.height - 4)
@@ -143,6 +149,7 @@ Item {
 
                         StyledText {
                             id: titleText
+
                             text: root.modelData?.title || root.ipc.class || qsTr("Window")
                             font: Tokens.font.label.builders.medium.weight(Font.DemiBold).build()
                             color: Colours.palette.m3onSurface
@@ -156,6 +163,7 @@ Item {
                     // Close button on hover
                     IconButton {
                         id: closeBtn
+
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.rightMargin: 2
@@ -171,6 +179,7 @@ Item {
 
         MouseArea {
             id: dragArea
+
             anchors.fill: parent
             hoverEnabled: true
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton
@@ -183,23 +192,9 @@ Item {
             }
         }
 
-        // Drag.onDragFinished: dropAction => {
-        //     root.dragInProgress = false;
-        //     root.z = 0;
-
-        //     if (root.parent !== root.homeParent) {
-        //         const mapped = root.mapToItem(root.homeParent, 0, 0);
-        //         root.parent = root.homeParent;
-        //         root.x = mapped.x;
-        //         root.y = mapped.y;
-        //     }
-
-        //     root.x = Qt.binding(function() { return root.targetX; });
-        //     root.y = Qt.binding(function() { return root.targetY; });
-        // }
-
         DragHandler {
             id: dragHandler
+
             target: root
             grabPermissions: PointerHandler.CanTakeOverFromAnything
             onActiveChanged: {
@@ -239,34 +234,6 @@ Item {
                 });
             }
         }
-        // DragHandler {
-        //     id: dragHandler
-        //     target: root
-        //     grabPermissions: PointerHandler.CanTakeOverFromAnything
-        //     onActiveChanged: {
-        //         root.dragInProgress = active;
-        //         root.z = active ? 10000 : 0;
-        //         if (active) {
-        //             const mapped = root.mapToItem(root.dragLayer, 0, 0);
-        //             root.parent = root.dragLayer;
-        //             root.x = mapped.x;
-        //             root.y = mapped.y;
-        //             return;
-        //         }
-
-        //         if (root.parent !== root.homeParent) {
-        //             const mapped = root.mapToItem(root.homeParent, 0, 0);
-        //             root.parent = root.homeParent;
-        //             root.x = mapped.x;
-        //             root.y = mapped.y;
-        //         }
-
-        //         if (!active) {
-        //             root.x = Qt.binding(function() { return root.targetX; });
-        //             root.y = Qt.binding(function() { return root.targetY; });
-        //         }
-        //     }
-        // }
 
         HoverHandler {
             id: hoverHandler

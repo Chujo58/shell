@@ -16,17 +16,19 @@ Item {
     id: root
 
     required property HyprlandMonitor monitor
-    signal closeRequested
 
     readonly property var toplevels: OverviewState.getAllToplevels("")
     readonly property real cardWidth: 300
     readonly property real cardHeight: 180
+
+    signal closeRequested
 
     implicitWidth: parent.width
     implicitHeight: 400
 
     Flickable {
         id: flickable
+
         anchors.fill: parent
         contentWidth: Math.max(width, grid.implicitWidth + Tokens.padding.large * 2)
         contentHeight: Math.max(height, grid.implicitHeight + Tokens.padding.large * 2)
@@ -35,11 +37,13 @@ Item {
 
         Item {
             id: container
+
             width: flickable.contentWidth
             height: flickable.contentHeight
 
             Grid {
                 id: grid
+
                 anchors.centerIn: parent
                 columns: Math.max(1, Math.min(4, Math.floor((flickable.width - Tokens.padding.large * 2) / (root.cardWidth + Tokens.spacing.large))))
                 spacing: Tokens.spacing.large
@@ -49,6 +53,7 @@ Item {
 
                     StyledRect {
                         id: itemCard
+
                         required property HyprlandToplevel modelData
                         required property int index
 
@@ -64,6 +69,7 @@ Item {
                         border.color: isFocused ? Colours.palette.m3primary : (hoverHandler.hovered ? Colours.palette.m3outline : Colours.palette.m3outlineVariant)
 
                         scale: hoverHandler.hovered ? 1.02 : 1.0
+
                         Behavior on scale {
                             Anim {}
                         }
@@ -92,6 +98,7 @@ Item {
                                 // Live Wayland Screencopy preview of the window
                                 ScreencopyView {
                                     id: screencopy
+
                                     anchors.fill: parent
                                     captureSource: itemCard.modelData?.wayland ?? null
                                     live: true
@@ -158,6 +165,7 @@ Item {
 
                                     StyledText {
                                         id: wsText
+
                                         anchors.centerIn: parent
                                         text: itemCard.modelData?.workspace?.name ?? qsTr("WS")
                                         font: Tokens.font.label.builders.small.weight(Font.Medium).build()
@@ -183,6 +191,7 @@ Item {
 
                         DragHandler {
                             id: dragHandler
+
                             target: itemCard
                             grabPermissions: PointerHandler.CanTakeOverFromAnything
                         }

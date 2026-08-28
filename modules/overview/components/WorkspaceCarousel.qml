@@ -13,7 +13,6 @@ Item {
     id: root
 
     required property HyprlandMonitor monitor
-    signal closeRequested
 
     readonly property var workspaceIds: OverviewState.getNormalWorkspaceIds(monitor)
     readonly property var workspaceRows: OverviewState.getNormalWorkspaceRows(monitor)
@@ -22,8 +21,7 @@ Item {
     readonly property real cardSpacing: Tokens.spacing.medium
     readonly property real sidePadding: Tokens.padding.large
 
-    implicitWidth: parent.width
-    implicitHeight: root.cardHeight * 2 + root.cardSpacing + root.sidePadding * 2 + Tokens.padding.large
+    signal closeRequested
 
     function centerFocusedWorkspace(): void {
         const focusedId = Hypr.focusedWorkspace?.id;
@@ -36,17 +34,22 @@ Item {
         }
     }
 
+    implicitWidth: parent.width
+    implicitHeight: root.cardHeight * 2 + root.cardSpacing + root.sidePadding * 2 + Tokens.padding.large
+
     Component.onCompleted: Qt.callLater(centerFocusedWorkspace)
 
     Connections {
-        target: Hypr
         function onFocusedWorkspaceChanged(): void {
             root.centerFocusedWorkspace();
         }
+
+        target: Hypr
     }
 
     Flickable {
         id: flickable
+
         anchors.top: parent.top
         anchors.bottom: pagination.top
         anchors.bottomMargin: Tokens.padding.medium
@@ -66,11 +69,13 @@ Item {
 
         Item {
             id: container
+
             width: flickable.contentWidth
             height: flickable.contentHeight
 
             Column {
                 id: rowsColumn
+
                 x: Math.max(root.sidePadding, (container.width - implicitWidth) / 2)
                 y: root.sidePadding
                 spacing: root.cardSpacing
@@ -81,6 +86,7 @@ Item {
                     Row {
                         required property var modelData
                         required property int index
+
                         spacing: root.cardSpacing
                         visible: index === 0 || modelData.some(id => root.workspaceIds.indexOf(id) > 4)
                         height: visible ? root.cardHeight : 0
@@ -106,6 +112,7 @@ Item {
 
     Item {
         id: dragLayer
+
         anchors.fill: parent
         clip: false
         z: 1000
@@ -113,6 +120,7 @@ Item {
 
     Row {
         id: pagination
+
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: Tokens.padding.small
@@ -124,6 +132,7 @@ Item {
 
             StyledRect {
                 required property int index
+
                 implicitWidth: (Math.floor(((Hypr.focusedWorkspace?.id ?? 1) - 1) / 5) === this.index) ? 18 : 6
                 implicitHeight: 6
                 radius: Tokens.rounding.full

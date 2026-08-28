@@ -17,6 +17,7 @@ Singleton {
     property int dragHoverWorkspaceId: -1
 
     readonly property list<string> tabNames: [qsTr("Workspaces"), qsTr("Special"), qsTr("All Windows")]
+    property var _workspaceCardRegistry: ({})
 
     function reset(): void {
         searchQuery = "";
@@ -162,8 +163,6 @@ Singleton {
         if (callback)
             callback();
     }
-
-    property var _workspaceCardRegistry: ({})
 
     function registerWorkspaceCard(wsId: int, item: Item): void {
         _workspaceCardRegistry[wsId] = item;

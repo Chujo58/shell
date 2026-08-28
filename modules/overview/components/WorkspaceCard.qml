@@ -37,6 +37,7 @@ Item {
     implicitHeight: baseHeight + headerHeight + Tokens.padding.extraSmall
 
     scale: hoverHandler.hovered || isSelected ? 1.03 : (isFocused ? 1.01 : 1.0)
+
     Behavior on scale {
         Anim {}
     }
@@ -55,6 +56,7 @@ Item {
     // Top Card Header
     Row {
         id: header
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -98,6 +100,7 @@ Item {
 
             StyledText {
                 id: statusText
+
                 anchors.centerIn: parent
                 text: root.isFocused ? qsTr("Focused") : qsTr("Active")
                 font: Tokens.font.label.builders.medium.weight(Font.Bold).build()
@@ -150,15 +153,16 @@ Item {
         border.width: root.isFocused ? 2 : (root.isDropTarget ? 1.5 : (hoverHandler.hovered || root.isSelected ? 1.5 : 1))
         border.color: root.isFocused ? Colours.palette.m3primary : (root.isDropTarget ? Colours.palette.m3tertiary : (hoverHandler.hovered || root.isSelected ? Colours.palette.m3outline : Colours.palette.m3outlineVariant))
 
+        Component.onCompleted: OverviewState.registerWorkspaceCard(root.workspaceId, cardBody)
+
+        Component.onDestruction: OverviewState.unregisterWorkspaceCard(root.workspaceId, cardBody)
+
         Behavior on border.color {
             CAnim {}
         }
         Behavior on border.width {
             Anim {}
         }
-
-        Component.onCompleted: OverviewState.registerWorkspaceCard(root.workspaceId, cardBody)
-        Component.onDestruction: OverviewState.unregisterWorkspaceCard(root.workspaceId, cardBody)
 
         // Curved Content Wrapper
         ClippingWrapperRectangle {
@@ -173,6 +177,7 @@ Item {
                 // Wallpaper preview inside desktop card
                 Image {
                     id: wallPreview
+
                     anchors.fill: parent
                     source: Wallpapers.current ? `file://${Wallpapers.current}` : ""
                     fillMode: Image.PreserveAspectCrop
@@ -183,6 +188,7 @@ Item {
                 // Miniature windows viewport
                 Item {
                     id: innerViewport
+
                     anchors.fill: parent
                     anchors.margins: Tokens.padding.extraSmall
                     z: 1
@@ -205,6 +211,7 @@ Item {
         // State layer for card clicks
         StateLayer {
             id: stateLayer
+
             anchors.fill: parent
             radius: Tokens.rounding.large
             onClicked: root.clicked()
