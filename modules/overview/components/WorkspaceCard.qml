@@ -17,6 +17,7 @@ Item {
     required property int modelData
     required property HyprlandMonitor monitor
     required property int index
+    required property Item dragLayer
     readonly property int workspaceId: modelData
     property string workspaceName: ""
     property int cardIndex: index
@@ -184,6 +185,8 @@ Item {
                             monitor: root.monitor
                             cardWidth: innerViewport.width
                             cardHeight: innerViewport.height
+                            dragLayer: root.dragLayer
+                            homeParent: innerViewport
                         }
                     }
                 }

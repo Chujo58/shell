@@ -66,6 +66,7 @@ Item {
                             modelData: specialWorkspace.modelData.id
                             baseWidth: root.cardWidth
                             monitor: root.monitor
+                            dragLayer: dragLayer
                             workspaceName: specialWorkspace.modelData.name
 
                             onClicked: {
@@ -76,6 +77,13 @@ Item {
                 }
             }
         }
+    }
+
+    Item {
+        id: dragLayer
+        anchors.fill: parent
+        clip: false
+        z: 1000
     }
 
     // Empty State if no scratchpads exist
