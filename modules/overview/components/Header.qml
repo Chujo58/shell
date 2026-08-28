@@ -18,6 +18,7 @@ Item {
     // Centered Segmented Navigation Tabs
     SegmentedNav {
         id: segmentedNav
+
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: Tokens.padding.large
@@ -37,6 +38,7 @@ Item {
 
         Row {
             id: closeRow
+
             anchors.centerIn: parent
             spacing: Tokens.spacing.small
 

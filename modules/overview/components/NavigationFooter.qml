@@ -50,6 +50,7 @@ Item {
 
                 StyledText {
                     id: enterText
+
                     anchors.centerIn: parent
                     text: qsTr("Enter")
                     font: Tokens.font.label.builders.medium.weight(Font.Bold).build()
@@ -80,6 +81,7 @@ Item {
 
                 StyledText {
                     id: dragKeyText
+
                     anchors.centerIn: parent
                     text: qsTr("Drag")
                     font: Tokens.font.label.builders.medium.weight(Font.Bold).build()
@@ -110,6 +112,7 @@ Item {
 
                 StyledText {
                     id: midKeyText
+
                     anchors.centerIn: parent
                     text: qsTr("Middle Click")
                     font: Tokens.font.label.builders.medium.weight(Font.Bold).build()

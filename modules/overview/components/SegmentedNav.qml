@@ -38,6 +38,7 @@ StyledRect {
     // Sliding indicator
     StyledRect {
         id: indicator
+
         y: Tokens.padding.extraSmall
         height: root.height - Tokens.padding.extraSmall * 2
         radius: Tokens.rounding.full
@@ -65,6 +66,7 @@ StyledRect {
 
     Row {
         id: row
+
         anchors.centerIn: parent
         spacing: Tokens.spacing.extraSmall
 
@@ -73,6 +75,7 @@ StyledRect {
 
             Item {
                 id: tabItem
+
                 required property var modelData
                 required property int index
 
@@ -83,6 +86,7 @@ StyledRect {
 
                 Row {
                     id: contentRow
+
                     anchors.centerIn: parent
                     spacing: Tokens.spacing.small
 

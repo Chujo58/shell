@@ -20,6 +20,7 @@ Item {
     implicitHeight: baseHeight + 56
 
     scale: hoverHandler.hovered ? 1.03 : 1.0
+
     Behavior on scale {
         Anim {}
     }

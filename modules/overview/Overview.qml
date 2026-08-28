@@ -44,6 +44,7 @@ Scope {
 
                     OverviewContent {
                         id: content
+
                         anchors.fill: parent
                         screen: win.screen
 
@@ -57,8 +58,6 @@ Scope {
     }
 
     IpcHandler {
-        target: "overview"
-
         function open(): void {
             const s = ShellState.forActive();
             if (s) {
@@ -85,5 +84,7 @@ Scope {
         function tab(tabIndex: int): void {
             OverviewState.activeTab = tabIndex;
         }
+
+        target: "overview"
     }
 }

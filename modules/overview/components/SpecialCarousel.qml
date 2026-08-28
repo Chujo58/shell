@@ -13,18 +13,19 @@ Item {
     id: root
 
     required property HyprlandMonitor monitor
-    signal closeRequested
-
     readonly property var specialWorkspaces: OverviewState.getSpecialWorkspaces()
     readonly property real cardWidth: 420
     readonly property real cardSpacing: Tokens.spacing.large
     readonly property real sidePadding: Math.max(Tokens.padding.large, (root.width - cardWidth) / 2)
+
+    signal closeRequested
 
     implicitWidth: parent.width
     implicitHeight: 360
 
     Flickable {
         id: flickable
+
         anchors.fill: parent
         contentWidth: row.implicitWidth + root.sidePadding * 2
         contentHeight: height
@@ -41,11 +42,13 @@ Item {
 
         Item {
             id: container
+
             width: flickable.contentWidth
             height: flickable.height
 
             Row {
                 id: row
+
                 x: root.sidePadding
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: root.cardSpacing
@@ -55,12 +58,15 @@ Item {
 
                     Item {
                         id: specialWorkspace
+
                         required property var modelData
+
                         implicitWidth: card.implicitWidth
                         implicitHeight: card.implicitHeight
 
                         WorkspaceCard {
                             id: card
+
                             anchors.fill: parent
                             index: specialWorkspace.index
                             modelData: specialWorkspace.modelData.id
@@ -81,6 +87,7 @@ Item {
 
     Item {
         id: dragLayer
+
         anchors.fill: parent
         clip: false
         z: 1000
