@@ -91,6 +91,7 @@ Item {
                             WorkspaceCard {
                                 baseWidth: root.cardWidth
                                 monitor: root.monitor
+                                dragLayer: dragLayer
 
                                 onClicked: {
                                     OverviewState.focusWorkspace(modelData, () => root.closeRequested());
@@ -101,6 +102,13 @@ Item {
                 }
             }
         }
+    }
+
+    Item {
+        id: dragLayer
+        anchors.fill: parent
+        clip: false
+        z: 1000
     }
 
     Row {

@@ -19,6 +19,8 @@ Item {
     required property HyprlandMonitor monitor
     required property real cardWidth
     required property real cardHeight
+    required property Item dragLayer
+    required property Item homeParent
     property bool isHighlighted: false
     property bool dragInProgress: false
 
@@ -175,6 +177,21 @@ Item {
             onActiveChanged: {
                 root.dragInProgress = active;
                 root.z = active ? 10000 : 0;
+                if (active) {
+                    const mapped = root.mapToItem(root.dragLayer, 0, 0);
+                    root.parent = root.dragLayer;
+                    root.x = mapped.x;
+                    root.y = mapped.y;
+                    return;
+                }
+
+                if (root.parent !== root.homeParent) {
+                    const mapped = root.mapToItem(root.homeParent, 0, 0);
+                    root.parent = root.homeParent;
+                    root.x = mapped.x;
+                    root.y = mapped.y;
+                }
+
                 if (!active) {
                     root.x = Qt.binding(function() { return root.targetX; });
                     root.y = Qt.binding(function() { return root.targetY; });
