@@ -37,18 +37,20 @@ Item {
     implicitHeight: baseHeight + headerHeight + Tokens.padding.extraSmall
 
     scale: hoverHandler.hovered || isSelected ? 1.03 : (isFocused ? 1.01 : 1.0)
-    Behavior on scale { Anim {} }
-
-    DropArea {
-        id: dropArea
-        anchors.fill: parent
-        z: 10
-        onDropped: drop => {
-            if (drop.source) {
-                OverviewState.moveWindowToWorkspace(drop.source.modelData ?? drop.source, workspaceId);
-            }
-        }
+    Behavior on scale {
+        Anim {}
     }
+
+    // DropArea {
+    //     id: dropArea
+    //     anchors.fill: parent
+    //     z: 10
+    //     onDropped: drop => {
+    //         if (drop.source) {
+    //             OverviewState.moveWindowToWorkspace(drop.source.modelData ?? drop.source, workspaceId);
+    //         }
+    //     }
+    // }
 
     // Top Card Header
     Row {
@@ -134,6 +136,8 @@ Item {
     StyledRect {
         id: cardBody
 
+        readonly property bool isDropTarget: OverviewState.dragHoverWorkspaceId === root.workspaceId
+
         anchors.top: header.bottom
         anchors.topMargin: Tokens.padding.extraSmall
         anchors.left: parent.left
@@ -143,13 +147,18 @@ Item {
         z: 1
 
         color: Colours.layer(Colours.palette.m3surfaceContainer, 0)
-        border.width: root.isFocused ? 2 : (hoverHandler.hovered || root.isSelected || dropArea.containsDrag ? 1.5 : 1)
-        border.color: root.isFocused
-            ? Colours.palette.m3primary
-            : (dropArea.containsDrag ? Colours.palette.m3tertiary : (hoverHandler.hovered || root.isSelected ? Colours.palette.m3outline : Colours.palette.m3outlineVariant))
+        border.width: root.isFocused ? 2 : (root.isDropTarget ? 1.5 : (hoverHandler.hovered || root.isSelected ? 1.5 : 1))
+        border.color: root.isFocused ? Colours.palette.m3primary : (root.isDropTarget ? Colours.palette.m3tertiary : (hoverHandler.hovered || root.isSelected ? Colours.palette.m3outline : Colours.palette.m3outlineVariant))
 
-        Behavior on border.color { CAnim {} }
-        Behavior on border.width { Anim {} }
+        Behavior on border.color {
+            CAnim {}
+        }
+        Behavior on border.width {
+            Anim {}
+        }
+
+        Component.onCompleted: OverviewState.registerWorkspaceCard(root.workspaceId, cardBody)
+        Component.onDestruction: OverviewState.unregisterWorkspaceCard(root.workspaceId, cardBody)
 
         // Curved Content Wrapper
         ClippingWrapperRectangle {

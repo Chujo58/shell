@@ -64,9 +64,15 @@ Item {
                         border.color: isFocused ? Colours.palette.m3primary : (hoverHandler.hovered ? Colours.palette.m3outline : Colours.palette.m3outlineVariant)
 
                         scale: hoverHandler.hovered ? 1.02 : 1.0
-                        Behavior on scale { Anim {} }
-                        Behavior on color { CAnim {} }
-                        Behavior on border.color { CAnim {} }
+                        Behavior on scale {
+                            Anim {}
+                        }
+                        Behavior on color {
+                            CAnim {}
+                        }
+                        Behavior on border.color {
+                            CAnim {}
+                        }
 
                         Drag.active: dragHandler.active
                         Drag.source: itemCard.modelData
@@ -103,7 +109,9 @@ Item {
                                     color: Colours.layer(Colours.palette.m3surfaceContainerHighest, 1)
                                     opacity: hoverHandler.hovered || screencopy.captureSource === null ? 0.95 : 0.8
 
-                                    Behavior on opacity { Anim {} }
+                                    Behavior on opacity {
+                                        Anim {}
+                                    }
 
                                     Row {
                                         anchors.fill: parent

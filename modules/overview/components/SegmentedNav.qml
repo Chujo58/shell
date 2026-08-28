@@ -11,9 +11,21 @@ StyledRect {
     id: root
 
     readonly property list<var> tabs: [
-        { name: qsTr("Workspaces"), icon: "view_carousel", tabId: 0 },
-        { name: qsTr("Special"), icon: "crop_square", tabId: 1 },
-        { name: qsTr("All Windows"), icon: "grid_view", tabId: 2 }
+        {
+            name: qsTr("Workspaces"),
+            icon: "view_carousel",
+            tabId: 0
+        },
+        {
+            name: qsTr("Special"),
+            icon: "crop_square",
+            tabId: 1
+        },
+        {
+            name: qsTr("All Windows"),
+            icon: "grid_view",
+            tabId: 2
+        }
     ]
 
     implicitWidth: row.implicitWidth + Tokens.padding.extraSmall * 2
@@ -43,8 +55,12 @@ StyledRect {
         }
         width: row.children[OverviewState.activeTab]?.width ?? 100
 
-        Behavior on x { Anim {} }
-        Behavior on width { Anim {} }
+        Behavior on x {
+            Anim {}
+        }
+        Behavior on width {
+            Anim {}
+        }
     }
 
     Row {

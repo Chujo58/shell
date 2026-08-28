@@ -20,7 +20,9 @@ Item {
     implicitHeight: baseHeight + 56
 
     scale: hoverHandler.hovered ? 1.03 : 1.0
-    Behavior on scale { Anim {} }
+    Behavior on scale {
+        Anim {}
+    }
 
     StyledRect {
         anchors.top: parent.top
@@ -34,8 +36,12 @@ Item {
         border.width: 1.5
         border.color: hoverHandler.hovered ? Colours.palette.m3primary : Colours.palette.m3outlineVariant
 
-        Behavior on color { CAnim {} }
-        Behavior on border.color { CAnim {} }
+        Behavior on color {
+            CAnim {}
+        }
+        Behavior on border.color {
+            CAnim {}
+        }
 
         Column {
             anchors.centerIn: parent

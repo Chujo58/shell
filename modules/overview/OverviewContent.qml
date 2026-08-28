@@ -106,7 +106,9 @@ Item {
                 opacity: visible ? 1.0 : 0.0
                 onCloseRequested: root.closeRequested()
 
-                Behavior on opacity { Anim {} }
+                Behavior on opacity {
+                    Anim {}
+                }
             }
 
             // Tab 1: Special Scratchpads Carousel
@@ -118,7 +120,9 @@ Item {
                 opacity: visible ? 1.0 : 0.0
                 onCloseRequested: root.closeRequested()
 
-                Behavior on opacity { Anim {} }
+                Behavior on opacity {
+                    Anim {}
+                }
             }
 
             // Tab 2: All Windows Grid
@@ -130,7 +134,9 @@ Item {
                 opacity: visible ? 1.0 : 0.0
                 onCloseRequested: root.closeRequested()
 
-                Behavior on opacity { Anim {} }
+                Behavior on opacity {
+                    Anim {}
+                }
             }
         }
     }

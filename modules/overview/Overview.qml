@@ -69,13 +69,15 @@ Scope {
 
         function close(): void {
             const s = ShellState.forActive();
-            if (s) s.overview = false;
+            if (s)
+                s.overview = false;
         }
 
         function toggle(): void {
             const s = ShellState.forActive();
             if (s) {
-                if (!s.overview) OverviewState.reset();
+                if (!s.overview)
+                    OverviewState.reset();
                 s.overview = !s.overview;
             }
         }

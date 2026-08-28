@@ -51,14 +51,23 @@ Item {
         enabled: !root.dragInProgress
         Anim {}
     }
-    Behavior on width { Anim {} }
-    Behavior on height { Anim {} }
+    Behavior on width {
+        Anim {}
+    }
+    Behavior on height {
+        Anim {}
+    }
 
-    // Drag support
-    Drag.active: dragHandler.active
-    Drag.source: root.modelData
-    Drag.hotSpot.x: width / 2
-    Drag.hotSpot.y: height / 2
+    function updateDragHover(): void {
+        const centerX = root.x + root.width / 2;
+        const centerY = root.y + root.height / 2;
+        OverviewState.dragHoverWorkspaceId = OverviewState.workspaceIdAtPoint(root.dragLayer, centerX, centerY);
+    }
+
+    onXChanged: if (root.dragInProgress)
+        root.updateDragHover()
+    onYChanged: if (root.dragInProgress)
+        root.updateDragHover()
 
     StyledRect {
         id: bg
@@ -68,14 +77,16 @@ Item {
 
         color: Colours.layer(Colours.palette.m3surfaceContainerHighest, 1)
         border.width: root.isHighlighted || hoverHandler.hovered ? 1.5 : 1
-        border.color: root.isHighlighted
-            ? Colours.palette.m3primary
-            : (hoverHandler.hovered ? Colours.palette.m3outline : Colours.palette.m3outlineVariant)
+        border.color: root.isHighlighted ? Colours.palette.m3primary : (hoverHandler.hovered ? Colours.palette.m3outline : Colours.palette.m3outlineVariant)
 
         opacity: dragHandler.active ? 0.6 : 1.0
 
-        Behavior on border.color { CAnim {} }
-        Behavior on opacity { Anim {} }
+        Behavior on border.color {
+            CAnim {}
+        }
+        Behavior on opacity {
+            Anim {}
+        }
 
         // Live Window Preview + Header clipped cleanly to rounded corners
         ClippingWrapperRectangle {
@@ -108,7 +119,9 @@ Item {
                     color: Colours.layer(Colours.palette.m3surfaceContainerHighest, 1)
                     opacity: hoverHandler.hovered || screencopy.captureSource === null ? 0.95 : 0.75
 
-                    Behavior on opacity { Anim {} }
+                    Behavior on opacity {
+                        Anim {}
+                    }
 
                     Row {
                         anchors.left: parent.left
@@ -170,6 +183,21 @@ Item {
             }
         }
 
+        // Drag.onDragFinished: dropAction => {
+        //     root.dragInProgress = false;
+        //     root.z = 0;
+
+        //     if (root.parent !== root.homeParent) {
+        //         const mapped = root.mapToItem(root.homeParent, 0, 0);
+        //         root.parent = root.homeParent;
+        //         root.x = mapped.x;
+        //         root.y = mapped.y;
+        //     }
+
+        //     root.x = Qt.binding(function() { return root.targetX; });
+        //     root.y = Qt.binding(function() { return root.targetY; });
+        // }
+
         DragHandler {
             id: dragHandler
             target: root
@@ -177,13 +205,24 @@ Item {
             onActiveChanged: {
                 root.dragInProgress = active;
                 root.z = active ? 10000 : 0;
+
                 if (active) {
                     const mapped = root.mapToItem(root.dragLayer, 0, 0);
                     root.parent = root.dragLayer;
                     root.x = mapped.x;
                     root.y = mapped.y;
+                    root.updateDragHover();
                     return;
                 }
+
+                const targetWsId = OverviewState.dragHoverWorkspaceId;
+                const currentWsId = root.modelData?.workspace?.id;
+
+                if (targetWsId > 0 && targetWsId !== currentWsId) {
+                    OverviewState.moveWindowToWorkspace(root.modelData, targetWsId);
+                }
+
+                OverviewState.dragHoverWorkspaceId = -1;
 
                 if (root.parent !== root.homeParent) {
                     const mapped = root.mapToItem(root.homeParent, 0, 0);
@@ -192,12 +231,42 @@ Item {
                     root.y = mapped.y;
                 }
 
-                if (!active) {
-                    root.x = Qt.binding(function() { return root.targetX; });
-                    root.y = Qt.binding(function() { return root.targetY; });
-                }
+                root.x = Qt.binding(function () {
+                    return root.targetX;
+                });
+                root.y = Qt.binding(function () {
+                    return root.targetY;
+                });
             }
         }
+        // DragHandler {
+        //     id: dragHandler
+        //     target: root
+        //     grabPermissions: PointerHandler.CanTakeOverFromAnything
+        //     onActiveChanged: {
+        //         root.dragInProgress = active;
+        //         root.z = active ? 10000 : 0;
+        //         if (active) {
+        //             const mapped = root.mapToItem(root.dragLayer, 0, 0);
+        //             root.parent = root.dragLayer;
+        //             root.x = mapped.x;
+        //             root.y = mapped.y;
+        //             return;
+        //         }
+
+        //         if (root.parent !== root.homeParent) {
+        //             const mapped = root.mapToItem(root.homeParent, 0, 0);
+        //             root.parent = root.homeParent;
+        //             root.x = mapped.x;
+        //             root.y = mapped.y;
+        //         }
+
+        //         if (!active) {
+        //             root.x = Qt.binding(function() { return root.targetX; });
+        //             root.y = Qt.binding(function() { return root.targetY; });
+        //         }
+        //     }
+        // }
 
         HoverHandler {
             id: hoverHandler

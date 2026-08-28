@@ -129,8 +129,12 @@ Item {
                 radius: Tokens.rounding.full
                 color: (Math.floor(((Hypr.focusedWorkspace?.id ?? 1) - 1) / 5) === this.index) ? Colours.palette.m3primary : Colours.palette.m3surfaceContainerHighest
 
-                Behavior on implicitWidth { Anim {} }
-                Behavior on color { CAnim {} }
+                Behavior on implicitWidth {
+                    Anim {}
+                }
+                Behavior on color {
+                    CAnim {}
+                }
             }
         }
     }
