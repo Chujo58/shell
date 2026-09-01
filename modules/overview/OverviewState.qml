@@ -120,12 +120,12 @@ Singleton {
         if (!toplevel)
             return;
         const addr = toplevel.address;
-        const wsId = toplevel.workspace?.id;
+        const wsId = toplevel.workspace?.name;
         if (wsId !== undefined) {
             Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ workspace = "${wsId}" })` : `workspace ${wsId}`);
         }
         if (addr) {
-            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.window.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
+            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ window = "address:0x${addr}" })` : `focuswindow address:0x${addr}`);
         }
         if (callback)
             callback();
